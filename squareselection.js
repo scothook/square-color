@@ -1,0 +1,141 @@
+var canvas = document.getElementById("myCan");
+        var ctx = canvas.getContext("2d");
+        canvas.width = 500;
+        canvas.height = 375;
+
+        var colors = [[],[],[],[]];
+        var parentColor;
+        var kid1color;
+        var kid2color;
+        var kid3color;
+        var lineage = [];
+        var generationNum = 0;
+
+        //draws title
+        ctx.fillStyle = "rgba(0,0,0,1)";
+        ctx.font = "bold 28px Arial";
+        ctx.fillText("Artificial Selection of Square Color", 18, 350);
+
+        //draws the arrows showing lineage
+        drawArrow(250,50,320,50,0,15);
+        drawArrow(110,140,110,150,Math.PI*0.5,5);  
+        drawArrow(245,140,245,150,Math.PI*0.5,5);
+        drawArrow(390,130,390,150,Math.PI*0.5,5);
+        ctx.beginPath();
+        ctx.moveTo(110,140);
+        ctx.lineTo(390,140);
+        ctx.stroke(); 
+
+        evolve(0);
+        canvas.addEventListener("mousedown", mouseDown, false);
+
+        //draws arrow based on arrow specifications
+        function drawArrow(startX,startY,endX,endY,direction,wingLength) { 
+            ctx.strokeStyle = "black";
+            ctx.beginPath();
+            ctx.moveTo(startX,startY);
+            ctx.lineTo(endX,endY);
+            ctx.lineTo(endX + wingLength*Math.sin(direction-(Math.PI*0.25)), endY + wingLength*Math.sin(direction-  (Math.PI*0.75)));
+            ctx.stroke();
+            ctx.moveTo(endX,endY);
+            ctx.lineTo(endX - wingLength*Math.sin(direction-(Math.PI*1.75)), endY - wingLength*Math.sin(direction-(Math.PI*0.25)));
+            ctx.stroke();
+        }
+
+        //turns user chosen square into new parent and mutates a new generation of squares. a = user chosen square 1, 2, or 3
+        function evolve(a) {
+
+            //assign new parent based on last choice or initial setup
+            if (a == 0) {
+                colors[0][0] = "127";
+                colors[0][1] = "127";
+                colors[0][2] = "127";
+            } else {
+                for(k = 0; k < 3; k++) {
+                    colors[0][k] = colors[a][k];
+                }
+            }
+            
+            //mutate rgba values within rgba range. i = square; j = r, g, or b value.
+            for (i = 1; i<4; i++) {
+                for (j = 0; j<3; j++) {
+                    colors[i][j] = colors[0][j] - variation();
+                    restrict(i, j);
+                }
+            }
+            
+            //assign and draw squares and report values
+            parentColor = "rgba(" + colors[0][0] + ", " + colors[0][1] + ", " + colors[0][2] + ", 1)";
+            kid1color = "rgba(" + colors[1][0] + ", " + colors[1][1] + ", " + colors[1][2] + ", 1)";
+            kid2color = "rgba(" + colors[2][0] + ", " + colors[2][1] + ", " + colors[2][2] + ", 1)";
+            kid3color = "rgba(" + colors[3][0] + ", " + colors[3][1] + ", " + colors[3][2] + ", 1)";
+            drawFamily();
+        }
+
+        //random mutations that cause differences from parent in every kid
+        function variation() {
+            return Math.floor(Math.random()*51)-25;
+        }
+
+        //draws parent, kids, and lineage squares; writes rgba values
+        function drawFamily() {
+            
+            //draws parent and kid squares
+            ctx.fillStyle = parentColor;
+            ctx.fillRect(340, 20, 100, 100);
+            ctx.fillStyle = kid1color;
+            ctx.fillRect(60, 160, 100, 100);
+            ctx.fillStyle = kid2color;
+            ctx.fillRect(200, 160, 100, 100);
+            ctx.fillStyle = kid3color;
+            ctx.fillRect(340, 160, 100, 100);
+
+            //draws lineage and updates generation number
+            lineage[generationNum] = parentColor;
+            for(i=0; i<generationNum; i++){
+                ctx.fillStyle = lineage[i];
+                ctx.fillRect(330 - (20*(generationNum-i)), 70, 18, 18);
+            }
+            generationNum += 1;
+            
+            //covers previous rgba values with white Rects then writes new rgba values
+            ctx.fillStyle = "rgba(255,255,255,1)";
+            ctx.fillRect(340,120,120,15);
+            ctx.fillRect(60,260,400,15);
+            ctx.font = "bolder 10px Arial";
+            ctx.fillStyle = "rgba(0,0,0,1)";
+            ctx.fillText(parentColor,340,130);
+            ctx.fillText(kid1color,60,270);
+            ctx.fillText(kid2color,200,270);
+            ctx.fillText(kid3color,340,270);
+            
+        }
+
+        //Creates buttons and calls evolve function when buttons are clicked
+        function mouseDown(event) {
+            var x = event.clientX;
+            var y = event.clientY;
+
+            if(x > 70 && x < 170 && y > 170 && y < 270){
+                evolve(1);
+            }
+            
+            if(x > 210 && x < 310 && y > 170 && y < 270){
+                evolve(2);
+            }
+
+            if(x > 350 && x < 450 && y > 170 && y < 270){
+                evolve(3);
+            }
+                
+        }
+
+        //makes sure that the rgba values stay between 0 and 255. i = square; j = r, g, or b value.
+        function restrict(i, j) { 
+            if (colors[i][j] < 0) {
+                colors[i][j] = 0;
+            }
+            if (colors[i][j] > 255) {
+                colors[i][j] = 255;
+            }
+        }
