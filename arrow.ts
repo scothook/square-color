@@ -1,17 +1,27 @@
-export class Square {
-   public x: number
-   public y: number
-   public width: number
-   public height: number
+export class Arrow {
+   public startX: number
+   public startY: number
+   public endX: number
+   public endY: number
+   public direction: number
+   public wingLength: number
    public color: string
 
-   public draw = (ctx: CanvasRenderingContext2D): void => {
-       if (ctx != null) {
-           ctx.fillStyle = this.color;
-           ctx.fillRect(this.x, this.y, this.width, this.height);
-       }
-   }
+   // draw
 }
+/*
+function drawArrow(startX,startY,endX,endY,direction,wingLength) { 
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(startX,startY);
+    ctx.lineTo(endX,endY);
+    ctx.lineTo(endX + wingLength*Math.sin(direction-(Math.PI*0.25)), endY + wingLength*Math.sin(direction-  (Math.PI*0.75)));
+    ctx.stroke();
+    ctx.moveTo(endX,endY);
+    ctx.lineTo(endX - wingLength*Math.sin(direction-(Math.PI*1.75)), endY - wingLength*Math.sin(direction-(Math.PI*0.25)));
+    ctx.stroke();
+}
+*/
 
 /*
    public draw = (ctx: CanvasRenderingContext2D): void => {
