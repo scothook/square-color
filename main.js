@@ -1,6 +1,7 @@
 var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");
 
+
 class Arrow {
    constructor(startX,startY,endX,endY,direction,wingLength) {
       this.startPoint = {
@@ -34,14 +35,6 @@ function drawLine(startPoint,endPoint) {
    context.lineTo(endPoint.x,endPoint.y);
    context.stroke();
 }
-
-var colors = [[],[],[],[]];
-var parentColor;
-var kid1color;
-var kid2color;
-var kid3color;
-var lineage = [];
-var generationNum = 0;
 
 //draws title
 context.fillStyle = "rgba(0,0,0,1)";
@@ -94,10 +87,10 @@ class Square {
       this.rgbaString = numbersToRGBA(r,g,b,a);
    }
    mutateColor(parentSquare) {
-      this.r = parentSquare.g - variation();
+      this.r = parentSquare.r - variation();
       this.g = parentSquare.g - variation();
       this.b = parentSquare.b - variation();
-      this.restrict(this.a);
+      this.restrict(this.r);
       this.restrict(this.g);
       this.restrict(this.b);
       this.rgbaString = numbersToRGBA(this.r,this.g,this.b);
@@ -112,18 +105,34 @@ class Square {
    }
 }
 
+var colors = [[],[],[],[]];
+var parentColor;
+var kid1color;
+var kid2color;
+var kid3color;
+var lineage = [];
+var generationNum = 0;
+
 let parentSquare = new Square(340, 20, 100, 100);
-parentSquare.draw();
+//parentSquare.draw();
 let childOne = new Square(60, 160, 100, 100);
-childOne.draw();
+//childOne.draw();
 let childTwo = new Square(200, 160, 100, 100);
-childTwo.draw();
-let childThree = new Square(340, 20, 100, 100);
-childThree.draw();
+//childTwo.draw();
+let childThree = new Square(340, 160, 100, 100);
+//childThree.draw();
 
 function initialize() {
    parentSquare.updateColor(127,127,127);
+
+   childOne.mutateColor(parentSquare);
+   childTwo.mutateColor(parentSquare);
+   childThree.mutateColor(parentSquare);
+
+   drawFamily();
 }
+
+initialize();
 
 //turns user chosen square into new parent and mutates a new generation of squares. a = user chosen square 1, 2, or 3
 function numbersToRGBA(r,g,b,a = 1) {
@@ -131,6 +140,19 @@ function numbersToRGBA(r,g,b,a = 1) {
 }
 
 function evolve(nextParent) {
+   //give parent colors of chosen nextParent
+   //mutate each child from this parent
+   //draw new colors
+   parentSquare.updateColor(nextParent.r,nextParent.g,nextParent.b);
+   childOne.mutateColor(nextParent);
+   childTwo.mutateColor(nextParent);
+   childThree.mutateColor(nextParent);
+
+   clearColors();
+   drawFamily();
+}
+
+function levolve(nextParent) {
    //assign new parent based on last choice or initial setup
    if (nextParent == 0) {
          colors[0][0] = "127";
@@ -160,21 +182,24 @@ function evolve(nextParent) {
 
 }
 
+function clearColors() {
+   context.fillStyle = "rgba(255,255,255,1)";
+   context.fillRect(340,120,120,15);
+   context.fillRect(60,260,400,15);
+}
+
 function drawFamily() {
    parentSquare.draw();
    childOne.draw();
    childTwo.draw();
    childThree.draw();
 
-   context.fillStyle = "rgba(255,255,255,1)";
-   context.fillRect(340,120,120,15);
-   context.fillRect(60,260,400,15);
    context.font = "bolder 10px Arial";
    context.fillStyle = "rgba(0,0,0,1)";
-   context.fillText(parentColor,340,130);
-   context.fillText(kid1color,60,270);
-   context.fillText(kid2color,200,270);
-   context.fillText(kid3color,340,270);
+   context.fillText(parentSquare.rgbaString,340,130);
+   context.fillText(childOne.rgbaString,60,270);
+   context.fillText(childTwo.rgbaString,200,270);
+   context.fillText(childThree.rgbaString,340,270);
 }
 
 //random mutations that cause differences from parent in every kid
@@ -222,15 +247,15 @@ function mouseDown(event) {
    var y = event.clientY;
 
    if(x > 70 && x < 170 && y > 170 && y < 270){
-         evolve(1);
+         evolve(childOne);
    }
    
    if(x > 210 && x < 310 && y > 170 && y < 270){
-         evolve(2);
+         evolve(childTwo);
    }
 
    if(x > 350 && x < 450 && y > 170 && y < 270){
-         evolve(3);
+         evolve(childThree);
    }
          
 }
@@ -245,5 +270,6 @@ function restrictOld(i, j) {
    }
 }
 
-evolve(0);
+//evolve();
 canvas.addEventListener("mousedown", mouseDown, false);
+
