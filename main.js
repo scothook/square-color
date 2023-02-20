@@ -1,112 +1,58 @@
-class Arrow {
-   constructor(startX,startY,endX,endY,direction,wingLength) {
-      this.startPoint = {
-         x: startX,
-         y: startY
-      }
-      this.endPoint = {
-         x: endX,
-         y: endY
-      }
-      this.leftWingPoint = {
-         x: endX + wingLength*Math.sin(direction-(Math.PI*0.25)),
-         y: endY + wingLength*Math.sin(direction-(Math.PI*0.75))
-      }
-      this.rightWingPoint = {
-         x: endX - wingLength*Math.sin(direction-(Math.PI*1.75)),
-         y: endY - wingLength*Math.sin(direction-(Math.PI*0.25))
-      }
-   }
-   draw() {
-      drawLine(this.startPoint,this.endPoint);
-      drawLine(this.endPoint,this.leftWingPoint);
-      drawLine(this.endPoint,this.rightWingPoint);
-   }
-}
+var canvas = document.getElementById("canvas");
+var context = canvas.getContext("2d");
 
-function drawLine(startPoint,endPoint) {
-   context.strokeStyle = "black";
-   context.beginPath();
-   context.moveTo(startPoint.x,startPoint.y);
-   context.lineTo(endPoint.x,endPoint.y);
-   context.stroke();
-}
+var lineage = [];
+var generationNum = 0;
 
+let parentSquare = new Square(340, 20, 100, 100);
+let childOne = new Square(60, 160, 100, 100);
+let childTwo = new Square(200, 160, 100, 100);
+let childThree = new Square(340, 160, 100, 100);
 
-
-
-
-
-class Square {
-   constructor(startX, startY, width, height, r = 127, g = 127, b = 127, a = 1, rgbaString = "rgba(127,127,127,1") {
-      this.x = startX;
-      this.y = startY;
-      this.height = height;
-      this.width = width;
-      this.r = r
-      this.g = g
-      this.b = b
-      this.a = a
-      this.rgbaString = numbersToRGBA(r,g,b,a);
-   }
-   draw() {
-      context.fillStyle = this.rgbaString;
-      context.fillRect(this.x, this.y, this.height, this.width);
-   }
-   updateColor(r,g,b,a = 1) {
-      this.r = r;
-      this.g = g;
-      this.b = b;
-      this.a = a;
-      this.rgbaString = numbersToRGBA(r,g,b,a);
-   }
-   mutateColor(parentSquare) {
-      this.r = parentSquare.r - variation();
-      this.g = parentSquare.g - variation();
-      this.b = parentSquare.b - variation();
-      this.restrict(this.r);
-      this.restrict(this.g);
-      this.restrict(this.b);
-      this.rgbaString = numbersToRGBA(this.r,this.g,this.b);
-   }
-   restrict(color) { 
-      if (color < 0) {
-         color = 0;
-      }
-      if (color > 255) {
-         color = 255;
-      }
-   }
-}
+initialize();
+canvas.addEventListener("mousedown", mouseDown, false);
 
 function initialize() {
-   createNewGen(parentSquare);
+   drawTitle();
+   drawLines();
+   colorNewGen(parentSquare);
    drawFamily();
    labelSquares();
 }
 
-function numbersToRGBA(r,g,b,a = 1) {
-   return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+function drawTitle() {
+   context.fillStyle = "rgba(0,0,0,1)";
+   context.font = "bold 28px Arial";
+   context.fillText("Artificial Selection of Square Color", 18, 350);
 }
 
-function evolve(nextParent) {
-   createNewGen(nextParent);
-   clearColors();
-   drawFamily();
-   labelSquares();
+function drawLines() {
+   let arrow1 = new Arrow(250,50,320,50,0,15);
+   let arrow2 = new Arrow(110,140,110,150,Math.PI*0.5,5); 
+   let arrow3 = new Arrow(245,140,245,150,Math.PI*0.5,5);
+   let arrow4 = new Arrow(390,130,390,150,Math.PI*0.5,5);
+   let line1 = new Arrow(110,140,390,140,0,0);
+
+   arrow1.draw();
+   arrow2.draw();
+   arrow3.draw();
+   arrow4.draw();
+   line1.draw();
 }
 
-function createNewGen(parent) {
+function colorNewGen(parent) {
    parentSquare.updateColor(parent.r,parent.g,parent.b);
    childOne.mutateColor(parent);
    childTwo.mutateColor(parent);
    childThree.mutateColor(parent);
 }
 
-function clearColors() {
-   context.fillStyle = "rgba(255,255,255,1)";
-   context.fillRect(340,120,120,15);
-   context.fillRect(60,260,400,15);
+function drawFamily() {
+   parentSquare.draw();
+   childOne.draw();
+   childTwo.draw();
+   childThree.draw();
+   drawLineage(parentSquare);
 }
 
 function labelSquares() {
@@ -118,15 +64,31 @@ function labelSquares() {
    context.fillText(childThree.rgbaString,340,270);
 }
 
-function drawFamily() {
-   parentSquare.draw();
-   childOne.draw();
-   childTwo.draw();
-   childThree.draw();
-   drawLineage(parentSquare);
+function drawLine(startPoint,endPoint) {
+   context.strokeStyle = "black";
+   context.beginPath();
+   context.moveTo(startPoint.x,startPoint.y);
+   context.lineTo(endPoint.x,endPoint.y);
+   context.stroke();
 }
 
-//random mutations that cause differences from parent in every kid
+function numbersToRGBA(r,g,b,a = 1) {
+   return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+}
+
+function evolve(nextParent) {
+   clearColors();
+   colorNewGen(nextParent);
+   drawFamily();
+   labelSquares();
+}
+
+function clearColors() {
+   context.fillStyle = "rgba(255,255,255,1)";
+   context.fillRect(340,120,120,15);
+   context.fillRect(60,260,400,15);
+}
+
 function variation() {
    return Math.floor(Math.random()*51)-25;
 }
@@ -159,42 +121,3 @@ function mouseDown(event) {
    }
          
 }
-
-
-
-var canvas = document.getElementById("canvas");
-var context = canvas.getContext("2d");
-//draws title
-context.fillStyle = "rgba(0,0,0,1)";
-context.font = "bold 28px Arial";
-context.fillText("Artificial Selection of Square Color", 18, 350);
-
-let arrow1 = new Arrow(250,50,320,50,0,15);
-arrow1.draw();
-let arrow2 = new Arrow(110,140,110,150,Math.PI*0.5,5); 
-arrow2.draw();
-let arrow3 = new Arrow(245,140,245,150,Math.PI*0.5,5);
-arrow3.draw();
-let arrow4 = new Arrow(390,130,390,150,Math.PI*0.5,5);
-arrow4.draw();
-
-let treeLineStart = {
-   x: 110,
-   y: 140
-}
-let treeLineEnd = {
-   x: 390,
-   y: 140,
-}
-drawLine(treeLineStart, treeLineEnd);
-
-var lineage = [];
-var generationNum = 0;
-
-let parentSquare = new Square(340, 20, 100, 100);
-let childOne = new Square(60, 160, 100, 100);
-let childTwo = new Square(200, 160, 100, 100);
-let childThree = new Square(340, 160, 100, 100);
-
-initialize();
-canvas.addEventListener("mousedown", mouseDown, false);
