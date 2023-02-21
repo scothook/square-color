@@ -8,7 +8,7 @@ class Square {
       this.g = g
       this.b = b
       this.a = a
-      this.rgbaString = numbersToRGBA(r,g,b,a);
+      this.rgbaString = this.numbersToRGBA(r,g,b,a);
    }
    draw() {
       context.fillStyle = this.rgbaString;
@@ -19,16 +19,14 @@ class Square {
       this.g = g;
       this.b = b;
       this.a = a;
-      this.rgbaString = numbersToRGBA(r,g,b,a);
+      this.rgbaString = this.numbersToRGBA(r,g,b,a);
    }
    mutateColor(parentSquare) {
-      this.r = parentSquare.r - variation();
-      this.g = parentSquare.g - variation();
-      this.b = parentSquare.b - variation();
+      this.r = parentSquare.r - this.variation();
+      this.g = parentSquare.g - this.variation();
+      this.b = parentSquare.b - this.variation();
       this.restrict();
-      //this.g = restrict(this.g);
-      //this.b = restrict(this.b);
-      this.rgbaString = numbersToRGBA(this.r,this.g,this.b);
+      this.rgbaString = this.numbersToRGBA(this.r,this.g,this.b);
    }
    restrict() { 
       if (this.r < 0) {
@@ -49,5 +47,11 @@ class Square {
       if (this.b > 255) {
          this.b = 255;
       }
+   }
+   variation() {
+      return Math.floor(Math.random()*51)-25;
+   }
+   numbersToRGBA(r,g,b,a = 1) {
+      return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
    }
 }

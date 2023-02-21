@@ -64,18 +64,6 @@ function labelSquares() {
    context.fillText(childThree.rgbaString,340,270);
 }
 
-function drawLine(startPoint,endPoint) {
-   context.strokeStyle = "black";
-   context.beginPath();
-   context.moveTo(startPoint.x,startPoint.y);
-   context.lineTo(endPoint.x,endPoint.y);
-   context.stroke();
-}
-
-function numbersToRGBA(r,g,b,a = 1) {
-   return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
-}
-
 function evolve(nextParent) {
    clearColors();
    colorNewGen(nextParent);
@@ -87,10 +75,6 @@ function clearColors() {
    context.fillStyle = "rgba(255,255,255,1)";
    context.fillRect(340,120,120,15);
    context.fillRect(60,260,400,15);
-}
-
-function variation() {
-   return Math.floor(Math.random()*51)-25;
 }
 
 function drawLineage(parentSquare) {

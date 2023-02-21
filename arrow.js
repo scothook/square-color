@@ -18,8 +18,15 @@ class Arrow {
       }
    }
    draw() {
-      drawLine(this.startPoint,this.endPoint);
-      drawLine(this.endPoint,this.leftWingPoint);
-      drawLine(this.endPoint,this.rightWingPoint);
+      this.drawLine(this.startPoint,this.endPoint);
+      this.drawLine(this.endPoint,this.leftWingPoint);
+      this.drawLine(this.endPoint,this.rightWingPoint);
+   }
+   drawLine(startPoint,endPoint) {
+      context.strokeStyle = "black";
+      context.beginPath();
+      context.moveTo(startPoint.x,startPoint.y);
+      context.lineTo(endPoint.x,endPoint.y);
+      context.stroke();
    }
 }
